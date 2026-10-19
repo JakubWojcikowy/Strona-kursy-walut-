@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tabela historycznych notowań kursów walut NBP. Wyszukiwanie, filtrowanie, sortowanie i eksport CSV.">
+  <title>Dane Historyczne – Tabela Notowań Walutowych | WalutaStat</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="dane">
+
+  <!-- ======================================================================
+       NAGŁÓWEK I GŁÓWNE MENU NAWIGACYJNE
+       ====================================================================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-link" title="Przejdź do strony głównej WalutaStat">
+        <img src="img/logo.svg" alt="Logo WalutaStat - Analiza kursów walut NBP" class="brand-logo">
+      </a>
+
+      <nav class="main-nav" aria-label="Główna nawigacja serwisu">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Strona główna</a></li>
+          <li><a href="dane.html" class="nav-link active" aria-current="page">Dane historyczne</a></li>
+          <li><a href="analiza.html" class="nav-link">Analiza &amp; Kalkulator</a></li>
+          <li><a href="formularz.html" class="nav-link">Nowe notowanie</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Przełącz motyw kolorystyczny witryny">
+          🌙 <span>Tryb ciemny</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       TREŚĆ GŁÓWNA STRONY (MAIN)
+       ====================================================================== -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Tytuł sekcji -->
+      <section style="margin-bottom: 2rem;">
+        <h1 class="section-title">Historyczne notowania kursów walut</h1>
+        <p class="section-subtitle">
+          Interaktywna baza danych kursów średnich NBP, kursów kupna, sprzedaży oraz spreadów.
+          Tabela generowana dynamicznie w JavaScript z możliwością wyszukiwania, sortowania i eksportu.
+        </p>
+      </section>
+
+      <!-- Panel filtrów i kontroli -->
+      <section class="data-controls-bar" aria-label="Panel filtrowania i wyszukiwania tabeli">
+        <!-- Wyszukiwarka tekstowa -->
+        <div class="filter-group">
+          <label for="search-input">Szukaj:</label>
+          <input 
+            type="search" 
+            id="search-input" 
+            class="form-control-inline" 
+            placeholder="Wpisz walutę lub datę..."
+            aria-label="Wyszukaj notowanie według waluty lub daty"
+          >
+        </div>
+
+        <!-- Filtr waluty -->
+        <div class="filter-group">
+          <label for="currency-filter">Waluta:</label>
+          <select id="currency-filter" class="form-control-inline" aria-label="Filtruj według waluty">
+            <option value="all">Wszystkie waluty</option>
+            <option value="EUR">EUR - Euro</option>
+            <option value="USD">USD - Dolar amerykański</option>
+            <option value="GBP">GBP - Funt szterling</option>
+            <option value="CHF">CHF - Frank szwajcarski</option>
+          </select>
+        </div>
+
+        <!-- Filtr zakresu dat -->
+        <div class="filter-group">
+          <label for="date-from">Od:</label>
+          <input type="date" id="date-from" class="form-control-inline" aria-label="Data początkowa">
+          
+          <label for="date-to">Do:</label>
+          <input type="date" id="date-to" class="form-control-inline" aria-label="Data końcowa">
+        </div>
+
+        <!-- Przyciski akcji -->
+        <div class="filter-group">
+          <button id="reset-filters-btn" class="btn btn-secondary btn-sm" title="Wyczyść wszystkie nałożone filtry">
+            ↺ Resetuj filtry
+          </button>
+          <button id="export-csv-btn" class="btn btn-primary btn-sm" title="Pobierz aktualnie przefiltrowany widok w pliku CSV">
+            📥 Eksportuj do CSV
+          </button>
+        </div>
+      </section>
+
+      <!-- Pasek podsumowania liczby wyników -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.9rem; color: var(--text-muted);">
+        <span id="filter-results-count">Ładowanie danych...</span>
+        <span><em>Wskazówka: Kliknij nagłówek kolumny, aby zmienić kierunek sortowania.</em></span>
+      </div>
+
+      <!-- Tabela danych wygenerowana przez JavaScript -->
+      <section class="table-responsive" aria-label="Tabela kursów walut">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col" class="sortable" data-sort="date" title="Kliknij, aby posortować po dacie">Data notowania</th>
+              <th scope="col" class="sortable" data-sort="currency" title="Kliknij, aby posortować po walucie">Waluta</th>
+              <th scope="col" class="sortable" data-sort="midRate" title="Kliknij, aby posortować po kursie średnim">Kurs średni NBP</th>
+              <th scope="col" class="sortable" data-sort="buyRate" title="Kliknij, aby posortować po kursie kupna">Kurs kupna</th>
+              <th scope="col" class="sortable" data-sort="sellRate" title="Kliknij, aby posortować po kursie sprzedaży">Kurs sprzedaży</th>
+              <th scope="col" title="Spread walutowy (różnica sprzedaży i kupna)">Spread</th>
+              <th scope="col" class="sortable" data-sort="changePercent" title="Kliknij, aby posortować po zmianie sesyjnej">Zmiana (%)</th>
+              <th scope="col">Źródło</th>
+            </tr>
+          </thead>
+          <tbody id="exchange-table-body">
+            <!-- Wiersze generowane dynamicznie przez skrypt js/app.js -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Dodatkowa sekcja informacyjna: opis atrybutów danych -->
+      <article class="card" style="margin-top: 2rem;">
+        <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Metodologia prezentowanych wskaźników</h2>
+        <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+          Każdy rekord w bazie danych spełnia wymogi specyfikacji projektu z <strong>Inżynierii i analizy danych</strong>,
+          posiadając pełen zestaw atrybutów ilościowych i jakościowych:
+        </p>
+        <ul style="padding-left: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8;">
+          <li><strong>Kurs średni NBP</strong> – oficjalny kurs publikowany w tabeli A Narodowego Banku Polskiego.</li>
+          <li><strong>Kurs kupna i sprzedaży</strong> – modelowe kursy kantorowe wyliczane w oparciu o rynkowy spread walutowy.</li>
+          <li><strong>Spread</strong> – miara marży i płynności rynkowej określana wzorem: \( \text{Spread} = \text{Kurs sprzedaży} - \text{Kurs kupna} \).</li>
+          <li><strong>Zmiana procentowa</strong> – relatywna dynamika notowań wyznaczana jako: \( \frac{\text{Kurs}_t - \text{Kurs}_{t-1}}{\text{Kurs}_{t-1}} \times 100\% \).</li>
+        </ul>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       STOPKA WITRYNY (FOOTER)
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>WalutaStat – Tabela Notowań</h3>
+          <p>
+            Dynamiczny moduł tabelaryczny ze wsparciem dla wyszukiwania, wielokryterialnej selekcji
+            i bezstratnego eksportu do arkusza kalkulacyjnego CSV.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h3>Nawigacja</h3>
+          <ul>
+            <li><a href="index.html">Strona główna</a></li>
+            <li><a href="dane.html">Dane historyczne</a></li>
+            <li><a href="analiza.html">Analiza &amp; Kalkulator</a></li>
+            <li><a href="formularz.html">Dodaj nowe notowanie</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Formaty danych</h3>
+          <ul>
+            <li><a href="data/dane.json" target="_blank">Pobierz źródło JSON</a></li>
+            <li><a href="https://nbp.pl" target="_blank" rel="noopener">Tabele NBP</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026/2027 Projekt: Kursy walut – dane historyczne. Inżynieria i analiza danych.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dołączenie skryptów JS -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
