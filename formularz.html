@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Formularz rejestracji i weryfikacji nowego notowania kursu walut. Podwójna walidacja HTML5 i JavaScript.">
+  <title>Rejestracja Nowego Notowania Walutowego – Formularz | WalutaStat</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="formularz">
+
+  <!-- ======================================================================
+       NAGŁÓWEK I GŁÓWNE MENU NAWIGACYJNE
+       ====================================================================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-link" title="Przejdź do strony głównej WalutaStat">
+        <img src="img/logo.svg" alt="Logo WalutaStat - Analiza kursów walut NBP" class="brand-logo">
+      </a>
+
+      <nav class="main-nav" aria-label="Główna nawigacja serwisu">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Strona główna</a></li>
+          <li><a href="dane.html" class="nav-link">Dane historyczne</a></li>
+          <li><a href="analiza.html" class="nav-link">Analiza &amp; Kalkulator</a></li>
+          <li><a href="formularz.html" class="nav-link active" aria-current="page">Nowe notowanie</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Przełącz motyw kolorystyczny witryny">
+          🌙 <span>Tryb ciemny</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       TREŚĆ GŁÓWNA STRONY (MAIN)
+       ====================================================================== -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Wprowadzenie do formularza -->
+      <section style="text-align: center; max-width: 760px; margin: 0 auto 2.5rem;">
+        <h1 class="section-title">Rejestracja Nowego Notowania Walutowego</h1>
+        <p class="section-subtitle">
+          Wprowadź oficjalne kursy sesyjne do bazy danych. Formularz weryfikuje spójność ekonomiczną
+          danych (spread, kurs średni, poprawność daty) z wykorzystaniem mechanizmów HTML5 oraz zaawansowanej walidacji JavaScript.
+        </p>
+      </section>
+
+      <div style="display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start;">
+        
+        <!-- ================================================================
+             KARTA GŁÓWNA FORMULARZA
+             ================================================================ -->
+        <section class="card form-card">
+          <!-- Kontener na komunikaty błędów walidacji lub sukcesu -->
+          <div id="form-feedback-container" aria-live="polite"></div>
+
+          <!-- Karta podsumowania pomyślnie dodanego rekordu (ukryta początkowo) -->
+          <div id="form-summary-card" class="card" style="display: none; background-color: var(--success-bg); border-color: var(--success); margin-bottom: 2rem;">
+            <h2 style="font-size: 1.25rem; color: var(--success); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+              ✓ Podsumowanie zarejestrowanego notowania
+            </h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.92rem;">
+              <div><strong>Data sesji:</strong> <span id="sum-date"></span></div>
+              <div><strong>Waluta:</strong> <span id="sum-currency"></span></div>
+              <div><strong>Kurs średni NBP:</strong> <span id="sum-mid"></span></div>
+              <div><strong>Kurs kupna:</strong> <span id="sum-buy"></span></div>
+              <div><strong>Kurs sprzedaży:</strong> <span id="sum-sell"></span></div>
+              <div><strong>Wyliczony spread:</strong> <span id="sum-spread"></span></div>
+              <div><strong>Instytucja źródłowa:</strong> <span id="sum-source"></span></div>
+              <div style="grid-column: 1 / -1;"><strong>Uwagi analityka:</strong> <span id="sum-notes"></span></div>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+              <em>Notowanie zostało natychmiast zapisane w pamięci <code>localStorage</code> i jest widoczne w tabeli danych oraz na wykresach!</em>
+            </p>
+          </div>
+
+          <!-- Formularz z min. 8 kontrolkami, fieldsetami i walidacją -->
+          <form id="exchange-submission-form" class="styled-form" novalidate>
+            
+            <!-- GRUPA 1: Identyfikacja waluty i sesji -->
+            <fieldset>
+              <legend>1. Identyfikacja notowania i sesji</legend>
+              <div class="form-grid">
+                <!-- Kontrolka 1: Data sesji -->
+                <div class="form-group">
+                  <label for="record-date" class="form-label">
+                    Data publikacji tabeli: <span class="req">*</span>
+                  </label>
+                  <input 
+                    type="date" 
+                    id="record-date" 
+                    name="record-date"
+                    class="form-input" 
+                    required 
+                    aria-describedby="date-help"
+                  >
+                  <span id="date-help" class="form-help">Maksymalnie data dzisiejsza (brak notowań przyszłych).</span>
+                </div>
+
+                <!-- Kontrolka 2: Kod waluty (Select) -->
+                <div class="form-group">
+                  <label for="record-currency" class="form-label">
+                    Kod waluty (ISO 4217): <span class="req">*</span>
+                  </label>
+                  <select id="record-currency" name="record-currency" class="form-select" required>
+                    <option value="EUR">EUR – Euro</option>
+                    <option value="USD">USD – Dolar amerykański</option>
+                    <option value="GBP">GBP – Funt szterling</option>
+                    <option value="CHF">CHF – Frank szwajcarski</option>
+                  </select>
+                </div>
+
+                <!-- Kontrolka 3: Pełna nazwa waluty (Text) -->
+                <div class="form-group full-width">
+                  <label for="record-currency-name" class="form-label">
+                    Oficjalna polska nazwa waluty: <span class="req">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="record-currency-name" 
+                    name="record-currency-name"
+                    class="form-input" 
+                    value="Euro" 
+                    required 
+                    maxlength="50"
+                    placeholder="np. Euro"
+                  >
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- GRUPA 2: Wycena kursowa i parametry rynku -->
+            <fieldset>
+              <legend>2. Parametry kursowe i spread (w PLN)</legend>
+              <div class="form-grid">
+                <!-- Kontrolka 4: Kurs średni NBP (Number z step) -->
+                <div class="form-group">
+                  <label for="record-mid-rate" class="form-label">
+                    Kurs średni NBP: <span class="req">*</span>
+                  </label>
+                  <input 
+                    type="number" 
+                    id="record-mid-rate" 
+                    name="record-mid-rate"
+                    class="form-input" 
+                    step="0.0001" 
+                    min="0.0001" 
+                    max="100.0000"
+                    placeholder="np. 4.3125" 
+                    required
+                  >
+                  <span class="form-help">Wartość z oficjalnej tabeli NBP.</span>
+                </div>
+
+                <!-- Kontrolka 5: Kurs kupna (Number) -->
+                <div class="form-group">
+                  <label for="record-buy-rate" class="form-label">
+                    Kurs kupna kantoru: <span class="req">*</span>
+                  </label>
+                  <input 
+                    type="number" 
+                    id="record-buy-rate" 
+                    name="record-buy-rate"
+                    class="form-input" 
+                    step="0.0001" 
+                    min="0.0001" 
+                    max="100.0000"
+                    placeholder="np. 4.2700" 
+                    required
+                  >
+                  <span class="form-help">Musi być niższy od kursu sprzedaży.</span>
+                </div>
+
+                <!-- Kontrolka 6: Kurs sprzedaży (Number) -->
+                <div class="form-group">
+                  <label for="record-sell-rate" class="form-label">
+                    Kurs sprzedaży kantoru: <span class="req">*</span>
+                  </label>
+                  <input 
+                    type="number" 
+                    id="record-sell-rate" 
+                    name="record-sell-rate"
+                    class="form-input" 
+                    step="0.0001" 
+                    min="0.0001" 
+                    max="100.0000"
+                    placeholder="np. 4.3550" 
+                    required
+                  >
+                  <span class="form-help">Musi być wyższy od kursu kupna.</span>
+                </div>
+
+                <!-- Kontrolka 7: Źródło danych (Radio buttons) -->
+                <div class="form-group">
+                  <span class="form-label">Źródło kwotowania: <span class="req">*</span></span>
+                  <div class="radio-group">
+                    <label class="radio-item">
+                      <input type="radio" name="record-source" value="NBP" checked>
+                      NBP Tabela A
+                    </label>
+                    <label class="radio-item">
+                      <input type="radio" name="record-source" value="EBC">
+                      EBC / Forex
+                    </label>
+                    <label class="radio-item">
+                      <input type="radio" name="record-source" value="Rynek">
+                      Kantor komercyjny
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- GRUPA 3: Weryfikacja, audyt i notatki -->
+            <fieldset>
+              <legend>3. Weryfikacja audytowa i uwagi</legend>
+              <div class="form-grid">
+                <!-- Kontrolka 8: Email analityka (Email) -->
+                <div class="form-group">
+                  <label for="record-analyst-email" class="form-label">
+                    Adres e-mail analityka wprowadzającego: <span class="req">*</span>
+                  </label>
+                  <input 
+                    type="email" 
+                    id="record-analyst-email" 
+                    name="record-analyst-email"
+                    class="form-input" 
+                    placeholder="analityk@uczelnia.edu.pl" 
+                    required
+                  >
+                </div>
+
+                <!-- Kontrolka 9: Checkbox weryfikacji -->
+                <div class="form-group full-width">
+                  <div class="checkbox-group">
+                    <label class="checkbox-item">
+                      <input type="checkbox" id="record-verified" name="record-verified" required>
+                      Oświadczam, że powyższe kwotowania zostały zweryfikowane z oficjalnym komunikatem NBP. <span class="req">*</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Kontrolka 10: Notatki analityczne (Textarea) -->
+                <div class="form-group full-width">
+                  <label for="record-notes" class="form-label">
+                    Komentarz analityczny / czynniki makroekonomiczne:
+                  </label>
+                  <textarea 
+                    id="record-notes" 
+                    name="record-notes"
+                    class="form-textarea" 
+                    maxlength="500" 
+                    placeholder="Np. Podwyższona zmienność związana z decyzją RPP o stopach procentowych..."
+                  ></textarea>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Przyciski formularza -->
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+              <button type="reset" class="btn btn-secondary">Wyczyść formularz</button>
+              <button type="submit" class="btn btn-primary">Zatwierdź i zarejestruj notowanie &rarr;</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ================================================================
+             PASEK BOCZNY (ASIDE) Z GRAFIKĄ I REGULAMINEM WALIDACJI
+             ================================================================ -->
+        <aside>
+          <figure style="margin-bottom: 1.5rem;">
+            <img 
+              src="img/security-check.svg" 
+              alt="Ilustracja tarczy bezpieczeństwa i weryfikacji poprawności danych finansowych"
+              style="border-radius: var(--radius-md); border: 1px solid var(--border-color);"
+            >
+            <figcaption style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">
+              Zautomatyzowane reguły spójności danych finansowych
+            </figcaption>
+          </figure>
+
+          <div class="card" style="background-color: var(--bg-surface-secondary);">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text-main);">
+              🛡️ Reguły walidacji JavaScript:
+            </h3>
+            <ul style="font-size: 0.88rem; color: var(--text-secondary); padding-left: 1.25rem; line-height: 1.6;">
+              <li><strong>Warunek 1:</strong> Kurs sprzedaży kantoru musi być bezwzględnie większy od kursu kupna (\( \text{Sell} > \text{Buy} \)).</li>
+              <li><strong>Warunek 2:</strong> Kurs średni NBP musi mieścić się wewnątrz widełek (\( \text{Buy} \le \text{Mid} \le \text{Sell} \)).</li>
+              <li><strong>Warunek 3:</strong> Data nie może dotyczyć przyszłych dni (\( \text{Data} \le \text{Dziś} \)).</li>
+              <li><strong>Warunek 4:</strong> Wymagane potwierdzenie audytu w checkboxie.</li>
+            </ul>
+          </div>
+        </aside>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       STOPKA WITRYNY (FOOTER)
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>WalutaStat – Rejestracja Notowań</h3>
+          <p>
+            Moduł wprowadzania danych z walidacją reguł biznesowych i dynamiczną synchronizacją
+            lokalnego magazynu przeglądarki.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h3>Nawigacja</h3>
+          <ul>
+            <li><a href="index.html">Strona główna</a></li>
+            <li><a href="dane.html">Dane historyczne</a></li>
+            <li><a href="analiza.html">Analiza &amp; Kalkulator</a></li>
+            <li><a href="formularz.html">Dodaj nowe notowanie</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Pomoc i standardy</h3>
+          <ul>
+            <li><a href="https://validator.w3.org" target="_blank" rel="noopener">W3C HTML5 Validator</a></li>
+            <li><a href="https://jigsaw.w3.org/css-validator/" target="_blank" rel="noopener">W3C CSS Validator</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026/2027 Projekt: Kursy walut – dane historyczne. Inżynieria i analiza danych.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dołączenie skryptów JS -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Projekt demonstracyjny: Kursy walut – dane historyczne. Inżynieria i analiza danych.">
+  <title>WalutaStat – Kursy walut i analiza danych historycznych NBP</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+
+  <!-- ======================================================================
+       NAGŁÓWEK I GŁÓWNE MENU NAWIGACYJNE
+       ====================================================================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-link" title="Przejdź do strony głównej WalutaStat">
+        <img src="img/logo.svg" alt="Logo WalutaStat - Analiza kursów walut NBP" class="brand-logo">
+      </a>
+
+      <nav class="main-nav" aria-label="Główna nawigacja serwisu">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link active" aria-current="page">Strona główna</a></li>
+          <li><a href="dane.html" class="nav-link">Dane historyczne</a></li>
+          <li><a href="analiza.html" class="nav-link">Analiza &amp; Kalkulator</a></li>
+          <li><a href="formularz.html" class="nav-link">Nowe notowanie</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Przełącz motyw kolorystyczny witryny">
+          🌙 <span>Tryb ciemny</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       TREŚĆ GŁÓWNA STRONY (MAIN)
+       ====================================================================== -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Sekcja Hero: wprowadzenie i grafika -->
+      <section class="hero-section">
+        <div class="hero-content">
+          <h1>Interaktywna analityka <span class="gradient-text">kursów walut</span></h1>
+          <p class="hero-lead">
+            Nowoczesna platforma do badania historycznych notowań NBP, kalkulacji spreadów walutowych
+            oraz monitorowania trendów na rynkach EUR, USD, GBP i CHF.
+          </p>
+          <div class="hero-buttons">
+            <a href="analiza.html" class="btn btn-primary">Zobacz analizę i wykresy &rarr;</a>
+            <a href="dane.html" class="btn btn-secondary">Przeglądaj tabelę danych</a>
+          </div>
+        </div>
+
+        <figure class="hero-visual">
+          <img src="img/currency-exchange.svg" alt="Infografika obrazująca notowania walut, kursy średnie i wymianę walutową">
+          <figcaption style="display:none;">Wizualizacja dynamiki kursów rynkowych</figcaption>
+        </figure>
+      </section>
+
+      <!-- Sekcja dynamicznych kart bieżących kursów -->
+      <section style="margin-bottom: 3.5rem;">
+        <h2 class="section-title">Ostatnie notowania rynkowe</h2>
+        <p class="section-subtitle">Kursy średnie NBP z ostatniej sesji walutowej pobrane dynamicznie z bazy danych</p>
+
+        <div class="stats-grid">
+          <!-- Karta EUR -->
+          <div class="stat-card">
+            <div class="stat-label">Euro (EUR/PLN)</div>
+            <div id="rate-eur" class="stat-value">---</div>
+            <div class="stat-sub">Zmiana sesyjna: <span id="change-eur" class="badge">---</span></div>
+          </div>
+
+          <!-- Karta USD -->
+          <div class="stat-card stat-green">
+            <div class="stat-label">Dolar USA (USD/PLN)</div>
+            <div id="rate-usd" class="stat-value">---</div>
+            <div class="stat-sub">Zmiana sesyjna: <span id="change-usd" class="badge">---</span></div>
+          </div>
+
+          <!-- Karta GBP -->
+          <div class="stat-card stat-purple">
+            <div class="stat-label">Funt brytyjski (GBP/PLN)</div>
+            <div id="rate-gbp" class="stat-value">---</div>
+            <div class="stat-sub">Zmiana sesyjna: <span id="change-gbp" class="badge">---</span></div>
+          </div>
+
+          <!-- Karta CHF -->
+          <div class="stat-card stat-amber">
+            <div class="stat-label">Frank szwajcarski (CHF/PLN)</div>
+            <div id="rate-chf" class="stat-value">---</div>
+            <div class="stat-sub">Zmiana sesyjna: <span id="change-chf" class="badge">---</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sekcja O Projekcie i Zastosowanie Analityczne (Article + Aside) -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+        
+        <article class="card">
+          <h2 class="section-title">O projekcie akademickim</h2>
+          <p style="margin-bottom: 1rem;">
+            Projekt został zrealizowany w ramach przedmiotu <strong>Aplikacje internetowe</strong> na kierunku 
+            <strong>Inżynieria i analiza danych</strong> (rok akademicki 2026/2027). Aplikacja stanowi praktyczne wdrożenie
+            interaktywnej witryny analizującej zbiór danych historycznych kursów walut NBP (Temat 27).
+          </p>
+
+          <h3 style="font-size: 1.2rem; margin: 1.5rem 0 0.75rem; color: var(--text-main);">Kluczowe funkcjonalności platformy:</h3>
+          <ul style="padding-left: 1.5rem; line-height: 1.8; color: var(--text-secondary);">
+            <li><strong>Dynamiczna baza danych</strong> zawierająca historyczne notowania EUR, USD, GBP i CHF z obsługą pamięci podręcznej <code>localStorage</code>.</li>
+            <li><strong>Interaktywna tabela</strong> z wyszukiwaniem w czasie rzeczywistym, wielokryterialnym filtrowaniem i sortowaniem kolumn.</li>
+            <li><strong>Zaawansowany panel analityczny</strong> z biblioteką Chart.js, prezentujący wskaźniki statystyczne (średnie, minima, maksima, spready).</li>
+            <li><strong>Dedykowany kalkulator walutowy</strong> z przeliczeniem kwot według kursów średnich, kupna lub sprzedaży.</li>
+            <li><strong>Formularz dodawania notowań</strong> z podwójną walidacją HTML5 oraz regułami spójności ekonomicznej w czystym JavaScript.</li>
+            <li><strong>Eksport danych</strong> do formatu arkusza kalkulacyjnego CSV.</li>
+          </ul>
+
+          <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: center;">
+            <div>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Liczba aktywnych notowań w bazie:</span>
+              <strong id="total-records-count" style="font-size: 1.2rem; margin-left: 0.5rem; color: var(--primary);">---</strong>
+            </div>
+          </div>
+        </article>
+
+        <!-- Pasek boczny: ASIDE -->
+        <aside class="card" style="background-color: var(--bg-surface-secondary);">
+          <h3 style="font-size: 1.15rem; margin-bottom: 0.85rem; color: var(--text-main);">💡 Dlaczego analiza spreadu?</h3>
+          <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Spread walutowy to różnica między kursem sprzedaży a kursem kupna danej waluty. Stanowi on główny koszt transakcyjny wymiany walut w kantorach i bankach.
+          </p>
+          <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+            Nasz system automatycznie wylicza dzienny spread oraz prezentuje jego wahania w module analitycznym.
+          </p>
+          <a href="analiza.html" class="btn btn-secondary btn-sm" style="width: 100%;">Przejdź do analizy spreadów</a>
+        </aside>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       STOPKA WITRYNY (FOOTER)
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>WalutaStat – Analiza Rynków Walutowych</h3>
+          <p>
+            Aplikacja demonstracyjna zrealizowana zgodnie z wytycznymi dydaktycznymi projektu
+            z przedmiotu Aplikacje internetowe. Czysty HTML5, CSS3 oraz Vanilla JavaScript.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h3>Podstrony</h3>
+          <ul>
+            <li><a href="index.html">Strona główna</a></li>
+            <li><a href="dane.html">Tabela notowań</a></li>
+            <li><a href="analiza.html">Panel analityczny &amp; Kalkulator</a></li>
+            <li><a href="formularz.html">Dodaj nowe notowanie</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Dane i źródła</h3>
+          <ul>
+            <li><a href="https://nbp.pl" target="_blank" rel="noopener">Narodowy Bank Polski (NBP)</a></li>
+            <li><a href="https://www.chartjs.org" target="_blank" rel="noopener">Biblioteka Chart.js</a></li>
+            <li><a href="data/dane.json" target="_blank">Plik źródłowy JSON</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026/2027 Projekt: Kursy walut – dane historyczne. Inżynieria i analiza danych.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dołączenie skryptów JS -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

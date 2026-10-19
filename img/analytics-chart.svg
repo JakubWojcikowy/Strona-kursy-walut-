@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 350" fill="none">
+  <!-- Analytics & Dashboard Theme Graphic -->
+  <rect width="500" height="350" rx="16" fill="#f8fafc"/>
+  <rect x="25" y="25" width="450" height="300" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Bar Chart Simulation -->
+  <rect x="60" y="190" width="35" height="90" rx="6" fill="#3b82f6"/>
+  <rect x="110" y="150" width="35" height="130" rx="6" fill="#60a5fa"/>
+  <rect x="160" y="110" width="35" height="170" rx="6" fill="#2563eb"/>
+  <rect x="210" y="130" width="35" height="150" rx="6" fill="#93c5fd"/>
+  <rect x="260" y="80" width="35" height="200" rx="6" fill="#1d4ed8"/>
+  <rect x="310" y="100" width="35" height="180" rx="6" fill="#3b82f6"/>
+  <rect x="360" y="60" width="35" height="220" rx="6" fill="#1e40af"/>
+  <rect x="410" y="75" width="35" height="205" rx="6" fill="#60a5fa"/>
+
+  <!-- Trend Line overlay -->
+  <path d="M77 175 L 127 135 L 177 95 L 227 115 L 277 65 L 327 85 L 377 45 L 427 60" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="277" cy="65" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="377" cy="45" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/>
+
+  <!-- Metrics highlight bubble -->
+  <g transform="translate(180, 20)">
+    <rect width="140" height="46" rx="8" fill="#0f172a" opacity="0.95"/>
+    <text x="70" y="20" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" text-anchor="middle">MAKSYMALNY WZROST</text>
+    <text x="70" y="37" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#10b981" text-anchor="middle">+1.45% (EUR)</text>
+  </g>
+</svg>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard analityczny notowań kursów walut NBP z wykresem Chart.js, statystykami i kalkulatorem przeliczeń.">
+  <title>Analiza i Kalkulator Walutowy – Dashboard | WalutaStat</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="analiza">
+
+  <!-- ======================================================================
+       NAGŁÓWEK I GŁÓWNE MENU NAWIGACYJNE
+       ====================================================================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-link" title="Przejdź do strony głównej WalutaStat">
+        <img src="img/logo.svg" alt="Logo WalutaStat - Analiza kursów walut NBP" class="brand-logo">
+      </a>
+
+      <nav class="main-nav" aria-label="Główna nawigacja serwisu">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Strona główna</a></li>
+          <li><a href="dane.html" class="nav-link">Dane historyczne</a></li>
+          <li><a href="analiza.html" class="nav-link active" aria-current="page">Analiza &amp; Kalkulator</a></li>
+          <li><a href="formularz.html" class="nav-link">Nowe notowanie</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Przełącz motyw kolorystyczny witryny">
+          🌙 <span>Tryb ciemny</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       TREŚĆ GŁÓWNA STRONY (MAIN)
+       ====================================================================== -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Wprowadzenie do sekcji analizy -->
+      <section style="margin-bottom: 2rem;">
+        <h1 class="section-title">Dashboard Analityczny i Wykresy</h1>
+        <p class="section-subtitle">
+          Agregacja statystyczna notowań, dynamiczne wskaźniki w czasie rzeczywistym oraz
+          dedykowany kalkulator przeliczeń walutowych z uwzględnieniem spreadu.
+        </p>
+      </section>
+
+      <!-- Panel wyboru waluty do analizy -->
+      <section class="card" style="margin-bottom: 2rem; padding: 1.25rem;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <label for="dashboard-currency-select" style="font-weight: 700;">Wybierz walutę do analizy:</label>
+            <select id="dashboard-currency-select" class="form-control-inline" style="font-weight: 600; padding: 0.5rem 1rem;">
+              <option value="EUR">Euro (EUR)</option>
+              <option value="USD">Dolar amerykański (USD)</option>
+              <option value="GBP">Funt szterling (GBP)</option>
+              <option value="CHF">Frank szwajcarski (CHF)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <label for="dashboard-chart-type" style="font-weight: 600;">Typ wykresu:</label>
+            <select id="dashboard-chart-type" class="form-control-inline">
+              <option value="line">Wykres liniowy (trend)</option>
+              <option value="bar">Wykres słupkowy</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sekcja wyliczonych wskaźników analitycznych (Dashboard Cards) -->
+      <section style="margin-bottom: 2.5rem;" aria-label="Kluczowe wskaźniki statystyczne">
+        <h2 style="font-size: 1.35rem; margin-bottom: 1rem; color: var(--text-main);">Wskaźniki statystyczne wybranej waluty</h2>
+        
+        <div class="stats-grid">
+          <!-- Wskaźnik 1: Kurs średni -->
+          <div class="stat-card">
+            <div class="stat-label">Kurs średni w okresie</div>
+            <div id="metric-avg-rate" class="stat-value">---</div>
+            <div class="stat-sub">Średnia arytmetyczna z notowań</div>
+          </div>
+
+          <!-- Wskaźnik 2: Minimum -->
+          <div class="stat-card stat-green">
+            <div class="stat-label">Kurs minimalny (Min)</div>
+            <div id="metric-min-rate" class="stat-value">---</div>
+            <div class="stat-sub">Najniższe zarejestrowane notowanie</div>
+          </div>
+
+          <!-- Wskaźnik 3: Maksimum -->
+          <div class="stat-card stat-amber">
+            <div class="stat-label">Kurs maksymalny (Max)</div>
+            <div id="metric-max-rate" class="stat-value">---</div>
+            <div class="stat-sub">Najwyższe zarejestrowane notowanie</div>
+          </div>
+
+          <!-- Wskaźnik 4: Średni spread -->
+          <div class="stat-card stat-purple">
+            <div class="stat-label">Średni spread walutowy</div>
+            <div id="metric-avg-spread" class="stat-value">---</div>
+            <div class="stat-sub">Średnia marża rynkowa (sprzedaż - kupno)</div>
+          </div>
+
+          <!-- Wskaźnik 5: Maksymalne wahanie dzienne -->
+          <div class="stat-card">
+            <div class="stat-label">Maks. zmiana dzienna</div>
+            <div id="metric-max-volatility" class="stat-value">---</div>
+            <div class="stat-sub">Najwyższa bezwzględna zmiana sesyjna</div>
+          </div>
+
+          <!-- Wskaźnik 6: Liczba notowań -->
+          <div class="stat-card">
+            <div class="stat-label">Liczba sesji w próbie</div>
+            <div id="metric-sample-count" class="stat-value">---</div>
+            <div class="stat-sub">Liczba historycznych dni roboczych</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sekcja wykresu Chart.js -->
+      <section class="card" style="margin-bottom: 3rem;" aria-label="Interaktywny wykres zmian w czasie">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+          <h2 style="font-size: 1.35rem; color: var(--text-main);">Dynamika kursów i spreadów w czasie</h2>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Biblioteka: Chart.js</span>
+        </div>
+        
+        <div style="position: relative; height: 380px; width: 100%;">
+          <canvas id="currencyChart" aria-label="Wykres zmian kursu waluty w czasie" role="img"></canvas>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           FUNKCJONALNOŚĆ WYRÓŻNIAJĄCA: KALKULATOR PRZELICZEŃ WALUTOWYCH
+           (Zalecana funkcja dla Tematu 27: Kursy walut - dane historyczne)
+           ================================================================== -->
+      <section class="calculator-card" aria-label="Kalkulator przeliczeń walutowych">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; margin-bottom: 0.35rem; color: var(--text-main);">
+              🧮 Kalkulator przeliczeń walutowych
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+              Przeliczaj środki według najnowszych notowań rynkowych z możliwością wyboru kursu średniego, kupna lub sprzedaży.
+            </p>
+          </div>
+          <span class="badge badge-currency" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+            Funkcja indywidualna projektu
+          </span>
+        </div>
+
+        <div class="calc-grid">
+          <!-- Pole wejściowe kwoty i kierunku -->
+          <div class="calc-box">
+            <label for="calc-amount" class="form-label" style="margin-bottom: 0.5rem;">Wprowadź kwotę:</label>
+            <input 
+              type="number" 
+              id="calc-amount" 
+              class="form-input" 
+              value="1000" 
+              min="0.01" 
+              step="any"
+              placeholder="np. 1000"
+              style="font-size: 1.25rem; font-weight: 700;"
+            >
+
+            <div style="margin-top: 1rem;">
+              <label for="calc-direction" class="form-label">Kierunek wymiany:</label>
+              <select id="calc-direction" class="form-select" style="margin-top: 0.35rem;">
+                <option value="PLN_TO_CURR">Złoty (PLN) &rarr; Waluta obca</option>
+                <option value="CURR_TO_PLN">Waluta obca &rarr; Złoty (PLN)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Przycisk zamiany kierunku -->
+          <div style="display: flex; justify-content: center;">
+            <button id="calc-swap-direction-btn" class="calc-swap-btn" title="Odwróć kierunek przeliczenia" aria-label="Odwróć kierunek przeliczenia">
+              ⇄
+            </button>
+          </div>
+
+          <!-- Wybór waluty docelowej i typu kursu -->
+          <div class="calc-box">
+            <label for="calc-currency" class="form-label" style="margin-bottom: 0.5rem;">Waluta zagraniczna:</label>
+            <select id="calc-currency" class="form-select" style="font-size: 1.1rem; font-weight: 700;">
+              <option value="EUR">EUR - Euro (€)</option>
+              <option value="USD">USD - Dolar amerykański ($)</option>
+              <option value="GBP">GBP - Funt szterling (£)</option>
+              <option value="CHF">CHF - Frank szwajcarski (CHF)</option>
+            </select>
+
+            <div style="margin-top: 1rem;">
+              <label for="calc-rate-type" class="form-label">Zastosowany rodzaj kursu:</label>
+              <select id="calc-rate-type" class="form-select" style="margin-top: 0.35rem;">
+                <option value="mid">Kurs średni NBP (oficjalny)</option>
+                <option value="buy">Kurs kupna kantoru (wymiana na PLN)</option>
+                <option value="sell">Kurs sprzedaży kantoru (zakup waluty)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wynik przeliczenia -->
+        <div class="calc-result-display">
+          <div>
+            <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600;">
+              Wartość po przeliczeniu:
+            </span>
+            <div id="calc-result-value" class="calc-result-number">---</div>
+          </div>
+          <div id="calc-rate-info" style="font-size: 0.9rem; color: var(--text-secondary); text-align: right;">
+            Ładowanie parametrów kursu...
+          </div>
+        </div>
+      </section>
+
+      <!-- Ilustracja tematyczna i opis metodologii -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+        <figure>
+          <img src="img/analytics-chart.svg" alt="Wizualizacja wykresu słupkowego i liniowego analizy rynków walutowych" style="border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <figcaption style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">
+            Wykres poglądowy: analiza zmienności i wielowymiarowe porównanie walut
+          </figcaption>
+        </figure>
+
+        <article class="card">
+          <h3 style="font-size: 1.2rem; margin-bottom: 0.75rem;">Zastosowanie w Inżynierii Danych</h3>
+          <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+            Analiza szeregów czasowych notowań walutowych pozwala na identyfikację cykli koniunkturalnych,
+            wykrywanie anomalii kursowych oraz optymalizację decyzji hedgingowych w przedsiębiorstwach handlu zagranicznego.
+          </p>
+          <p style="font-size: 0.92rem; color: var(--text-secondary);">
+            Wszystkie powyższe wskaźniki są dynamicznie kalkulowane po stronie przeglądarki z wykorzystaniem natywnego API tablic JavaScript (<code>map</code>, <code>filter</code>, <code>reduce</code>).
+          </p>
+        </article>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       STOPKA WITRYNY (FOOTER)
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>WalutaStat – Moduł Analityczny</h3>
+          <p>
+            Kompleksowy dashboard statystyczny łączący wizualizację danych Chart.js
+            oraz dynamiczne narzędzie kalkulacji przeliczeń walutowych.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h3>Nawigacja</h3>
+          <ul>
+            <li><a href="index.html">Strona główna</a></li>
+            <li><a href="dane.html">Dane historyczne</a></li>
+            <li><a href="analiza.html">Analiza &amp; Kalkulator</a></li>
+            <li><a href="formularz.html">Dodaj nowe notowanie</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Zasoby</h3>
+          <ul>
+            <li><a href="https://www.chartjs.org/docs/latest/" target="_blank" rel="noopener">Dokumentacja Chart.js</a></li>
+            <li><a href="data/dane.json" target="_blank">Pobierz zbiór JSON</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026/2027 Projekt: Kursy walut – dane historyczne. Inżynieria i analiza danych.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Biblioteka Chart.js (lokalna z fallbackiem na CDN) -->
+  <script src="js/chart.umd.min.js"></script>
+  <script>
+    // Zabezpieczenie fallback, gdyby plik lokalny nie był dostępny
+    if (typeof Chart === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+      document.head.appendChild(script);
+    }
+  </script>
+
+  <!-- Dołączenie skryptów JS -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

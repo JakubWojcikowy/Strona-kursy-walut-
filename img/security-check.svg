@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 350" fill="none">
+  <!-- Verification & Form Graphic -->
+  <rect width="500" height="350" rx="16" fill="#f8fafc"/>
+  <rect x="30" y="30" width="440" height="290" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Shield and Checkmark -->
+  <circle cx="250" cy="140" r="70" fill="#eff6ff"/>
+  <path d="M250 85 C295 85, 305 95, 305 140 C305 185, 270 215, 250 225 C230 215, 195 185, 195 140 C195 95, 205 85, 250 85 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+  <path d="M230 142 L244 156 L272 126" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Form fields mockups below -->
+  <rect x="100" y="240" width="140" height="12" rx="6" fill="#e2e8f0"/>
+  <rect x="260" y="240" width="140" height="12" rx="6" fill="#cbd5e1"/>
+  <rect x="150" y="265" width="200" height="12" rx="6" fill="#3b82f6" opacity="0.6"/>
+
+  <text x="250" y="305" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#334155" text-anchor="middle">Weryfikacja spójności danych finansowych</text>
+</svg>
